@@ -13,75 +13,131 @@ class App extends Component {
     this.state = {
       searchByName: "",
       searchByAge: "",
-        records:records,
-        filteredRecords:records,
+      searchByCountry: "",
+      records: records,
+      filteredRecords: records,
       renderThis: records.map(record => {
-      return <Record record={record} key={record.id} />;
+        return <Record record={record} key={record.id} />;
       })
     };
   }
-    componentDidMount() {
-        this.filterAllRecords();
-    }
+  componentDidMount() {
+    this.filterAllRecords();
+  }
 
-    updateSearchByName(event) {
-    this.setState({ searchByName: event.target.value.substr(0, 20) }, this.filterAllRecords);
+  updateSearchByName(event) {
+    this.setState(
+      { searchByName: event.target.value.substr(0, 20) },
+      this.filterAllRecords
+    );
   }
 
   updateSearchByAge(event) {
-      this.setState({ searchByAge: event.target.value },this.filterAllRecords);
+    this.setState({ searchByAge: event.target.value }, this.filterAllRecords);
   }
-  filterRecordsByAge(records){
-    return records.filter(record => {
-        return (
-            record.age
-                .indexOf(this.state.searchByAge.toString()) !== -1
-        );
 
-    });
+  updateSearchByCountry(event) {
+    this.setState(
+      { searchByCountry: event.target.value.substr(0, 20) },
+      this.filterAllRecords
+    );
   }
-  filterRecordsByName(records){
+
+  filterRecordsByName(records) {
     return records.filter(record => {
       return (
-          record.userName
-              .toLowerCase()
-              .indexOf(this.state.searchByName.toLowerCase()) !== -1
+        record.userName
+          .toLowerCase()
+          .indexOf(this.state.searchByName.toLowerCase()) !== -1
       );
     });
   }
-    filterAllRecords() {
-      console.log(this.state.searchByName );
-      console.log(this.state.searchByAge );
-        if (this.state.searchByName != "") {
-            let filteredRecords = this.filterRecordsByName(this.state.records);
-          let renderThis = filteredRecords.map(record => {
-              return <Record record={record} key={record.id} />;
-          });
-            if (this.state.searchByAge != "") {
-                 filteredRecords = this.filterRecordsByAge(filteredRecords);
-                 renderThis = filteredRecords.map(record => {
-                    return <Record record={record} key={record.id} />;
-                });
-            }
-          this.setState({ renderThis: renderThis,filteredRecords: filteredRecords });
 
+  filterRecordsByAge(records) {
+    return records.filter(record => {
+      return record.age.indexOf(this.state.searchByAge.toString()) !== -1;
+    });
+  }
+
+  filterRecordsByCountry(records) {
+    return records.filter(record => {
+      return (
+        record.country
+          .toLowerCase()
+          .indexOf(this.state.searchByCountry.toLowerCase()) !== -1
+      );
+    });
+  }
+
+  filterAllRecords() {
+    // console.log(this.state.searchByName);
+    // console.log(this.state.searchByAge);
+    if (this.state.searchByName !== "") {
+      let filteredRecords = this.filterRecordsByName(this.state.records);
+      let renderThis = filteredRecords.map(record => {
+        return <Record record={record} key={record.id} />;
+      });
+
+      if (this.state.searchByAge !== "") {
+        filteredRecords = this.filterRecordsByAge(filteredRecords);
+        renderThis = filteredRecords.map(record => {
+          return <Record record={record} key={record.id} />;
+        });
       }
-        else {
-            if (this.state.searchByAge != "") {
-                const filteredRecords = this.filterRecordsByAge(this.state.records);
-                const renderThis = filteredRecords.map(record => {
-                    return <Record record={record} key={record.id}/>;
-                });
-                this.setState({renderThis: renderThis, filteredRecords: filteredRecords});
-            }
-            else
-            {
-                const renderThis = this.state.records.map(record => {
-                    return <Record record={record} key={record.id}/>;
-                });
-                this.setState({renderThis: renderThis, filteredRecords: this.state.records});
-            }
+
+      if (this.state.searchByCountry !== "") {
+        filteredRecords = this.filterRecordsByCountry(filteredRecords);
+        renderThis = filteredRecords.map(record => {
+          return <Record record={record} key={record.id} />;
+        });
+      }
+
+      this.setState({
+        renderThis: renderThis,
+        filteredRecords: filteredRecords
+      });
+    } else {
+      if (this.state.searchByAge !== "") {
+        const filteredRecords = this.filterRecordsByAge(this.state.records);
+        const renderThis = filteredRecords.map(record => {
+          return <Record record={record} key={record.id} />;
+        });
+
+        if (this.state.searchByCountry !== "") {
+          filteredRecords = this.filterRecordsByCountry(this.state.records);
+          renderThis = filteredRecords.map(record => {
+            return <Record record={record} key={record.id} />;
+          });
         }
+
+        this.setState({
+          renderThis: renderThis,
+          filteredRecords: filteredRecords
+        });
+      } else {
+        if (this.state.searchByCountry !== "") {
+          const filteredRecords = this.filterRecordsByCountry(
+            this.state.records
+          );
+          const renderThis = filteredRecords.map(record => {
+            return <Record record={record} key={record.id} />;
+          });
+          this.setState({
+            renderThis: renderThis,
+            filteredRecords: filteredRecords
+          });
+        } else {
+          const renderThis = this.state.records.map(record => {
+            return <Record record={record} key={record.id} />;
+          });
+
+          this.setState({
+            renderThis: renderThis,
+            filteredRecords: this.state.records
+          });
+        }
+      }
+    }
   }
   render() {
     return (
@@ -119,6 +175,18 @@ class App extends Component {
             aria-label="Age"
             onChange={this.updateSearchByAge.bind(this)}
             value={this.state.searchByAge}
+            aria-describedby="basic-addon1"
+          />
+        </InputGroup>
+        <InputGroup className="input">
+          <InputGroup.Prepend>
+            <InputGroup.Text id="basic-addon1">Country</InputGroup.Text>
+          </InputGroup.Prepend>
+          <FormControl
+            placeholder="Enter Country"
+            aria-label="Country"
+            onChange={this.updateSearchByCountry.bind(this)}
+            value={this.state.searchByCountry}
             aria-describedby="basic-addon1"
           />
         </InputGroup>
